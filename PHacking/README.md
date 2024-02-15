@@ -33,3 +33,14 @@ other/sketches contains the sketches of the structure of the dataset by hand tha
 paper contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF output of the paper.
 
 scripts contains the R scripts used to simulation, download, clean data,  test and repliacation code
+
+
+## Repo steps
+Step 1: Download the MM Data.dta from https://www.openicpsr.org/openicpsr/project/120246/version/V1/view, and put it into the data/raw_data folder. 
+Step 2: run the scripts 01-download_data.R to change the raw data *.dta into *.csv file. 
+Step 3: run 02-data_cleaning.R to do the data clean, and put the variable of interest into the analysis_data.csv and analysis_data1.csv, these revised data files are located in data/analysis_data
+Step 4: run 03-test_data.R to see if all the variables are valid
+Step 5: run 99-replications.R to get the Figure 1, Figure 2, Figure 3. The Summary statistic in Table 2 is done manually. 
+
+
+

@@ -4,11 +4,12 @@ subtitle: "P-Hacking Variation Across Method, Year, and Journal Rank: A Reproduc
 author: 
   - Chenhang Huang
   - Zixuan Yang
-thanks: "Code and data are available at: https://github.com/chenhanghuang/replication-research/tree/main/PHacking. Replication aspects are available at: https://www.socialsciencereproduction.org/reproductions/1635/select-paper"
+thanks: "Code and data are available at: https://github.com/chenhanghuang/reproduction/tree/main/PHacking. Replication aspects are available at: https://www.socialsciencereproduction.org/reproductions/1635/index?step=4"
 date: today
 date-format: long
 abstract: "This study delves into the integrity of empirical economic research by investigating the prevalence of p-hacking, a practice where researchers manipulate statistical tests to achieve desired results. Analyzing data from 25 economic journals between 2015 and 2018, we scrutinized the distribution of statistical test results across various methods and journal rankings. Our findings reveal a declining trend in p-hacking over time, shedding light on potential improvements in research practices. This study underscores the importance of transparency and rigor in empirical research, ensuring the credibility and reliability of scientific findings in economics and beyond."
 format: pdf
+toc: true
 number-sections: true
 bibliography: references.bib
 ---
@@ -23,8 +24,9 @@ library(readr)
 library(here)
 library(gridExtra)
 library(kableExtra)
+library(ggplot2)
+library(knitr)
 ```
-
 
 # Introduction
 
@@ -44,13 +46,16 @@ The remainder of this paper is structured as follows. @sec-data will do the data
 # Data {#sec-data}
 
 
-I extracted data from the replication package provided by the @brodeur2020methods, including the data set of Table 1 and Figures 1-3. Table 1, Figure 1, Figure 2, and Figure 3 (b, c, d) come from the same data set, while Figure 3a comes from data by another author, BBB. The data in the AAA package is in Stata format, which I read using the @havenR package in @citeR and then stored into a CSV file using @readrR .Since I needed to use two different datasets and they couldn't be merged, I stored these datasets separately into different CSV files.
+## Data Description
 
-In the data cleaning process, I first extracted the required 5 variables from the raw data, as shown in @tbl-table1. "Journal" represents the name of the published paper. There are a total of 25 Journals. Based on the journal rank, I defined two additional variables for each Journal: "top5" (if the Journal is among the top five, including "Quarterly Journal of Economics," "Journal of Political Economy," "Econometrica," "American Economic Review," and "Review of Economic Studies") and "top3" (if the Journal is among the top three, including "Quarterly Journal of Economics," "Journal of Political Economy," and "American Economic Review"). These variables will be used to analyze the difference in p-hacking by Journal rank. The "Title" variable is used to identify different articles. The variable "t" represents the test statistic in the paper, using methods such as DID, IV, RCT, and RDD.
+
+I extracted data from the replication package provided by the @brodeur2020methods, including the data set of @tbl-table2 and @fig-fig1, @fig-fig2 and @fig-fig3. @tbl-table2, @fig-fig1,  @fig-fig2, and @fig-fig3 (b, c, d) come from the same data set, while @fig-fig3 a comes from data by @brodeur2016star. The data in the @brodeur2020methods replication package is in Stata format, which I read using the @havenR package in @citeR and then stored into a CSV file using @readrR .Since I needed to use two different datasets and they couldn't be merged, I stored these datasets separately into different CSV files.
+
+In the data cleaning process, I first extracted the required 5 variables from the raw data, as shown in @tbl-table1 by using package @knitrR. "Journal" represents the name of the published paper. There are a total of 25 Journals. Based on the journal rank, I defined two additional variables for each Journal: "top5" (if the Journal is among the top five, including "Quarterly Journal of Economics," "Journal of Political Economy," "Econometrica," "American Economic Review," and "Review of Economic Studies") and "top3" (if the Journal is among the top three, including "Quarterly Journal of Economics," "Journal of Political Economy," and "American Economic Review"). These variables will be used to analyze the difference in p-hacking by Journal rank. The "Title" variable is used to identify different articles. The variable "t" represents the test statistic in the paper, using methods such as DID, IV, RCT, and RDD.
 
 ## Measurement
 
-In the replication package provided by @brodeur2020methods, data was collected from 25 top economic journals for the years 2015 and 2018, encompassing all articles utilizing the DID, IV, RCT, and RDD methods. Table 2 presents a comprehensive list of journals ranked based on the simple impact factor from RePEc. Articles not utilizing the aforementioned methods were disregarded. During sample selection, a rule-based exclusion procedure was employed. For each method, relevant keywords were searched throughout the entire text of published articles to identify the methods used. Articles employing variant sub-methods were manually removed. Notably, articles utilizing matching (DID) or instrumental variables as part of fuzzy RDD were excluded, with a focus on the two-stage least squares (IV) method. Additionally, articles utilizing structural equation modeling were removed. Ultimately, statistical data from 684 articles were collected.
+In the replication package provided by @brodeur2020methods, data was collected from 25 top economic journals for the years 2015 and 2018, encompassing all articles utilizing the DID, IV, RCT, and RDD methods. @tbl-table2 presents a comprehensive list of journals ranked based on the simple impact factor from RePEc. Articles not utilizing the aforementioned methods were disregarded. During sample selection, a rule-based exclusion procedure was employed. For each method, relevant keywords were searched throughout the entire text of published articles to identify the methods used. Articles employing variant sub-methods were manually removed. Notably, articles utilizing matching (DID) or instrumental variables as part of fuzzy RDD were excluded, with a focus on the two-stage least squares (IV) method. Additionally, articles utilizing structural equation modeling were removed. Ultimately, statistical data from 684 articles were collected.
 
 From the included articles, only estimated values were gathered from results tables. For DID, only the main interaction terms were collected unless non-interaction terms were described as coefficients of interest by the authors. For IV, only coefficients of the instrumental variables provided in the second stage were collected. For RDD, estimates of the preferred bandwidth were collected. Preferred bandwidth was determined by reading the text describing the estimates. Specifications such as controlling for third-degree or higher polynomials of forced variables were excluded. Lastly, for articles utilizing multiple methods, estimates were collected for each method separately. For instance, if a paper simultaneously utilized DID and IV, estimates for both methods were collected.
 
@@ -132,7 +137,7 @@ updated_t1 = updated_t1 %>% select(journal,DID,IV,RCT,RDD,Articles,Tests)
 
 ```{r}
 #| label: tbl-table1
-#| tbl-cap: Variables Definition
+#| tbl-cap: Variables Definition of the Reproduction Study
 #| echo: false
 #| warning: false
 variable = names(data)
@@ -153,7 +158,7 @@ Our results are summarized in @tbl-table2 by using @kableExtraR .We have gathere
 
 ```{r}
 #| label: tbl-table2
-#| tbl-cap: Summary Statistics
+#| tbl-cap: Summary Statistics of z-statistic in Articles from Top 25 Economic Journals in 2015 and 2018
 #| echo: false
 #| warning: false
 
@@ -161,8 +166,9 @@ updated_t1 %>%kbl() %>% kable_classic(full_width = F)
 
 ```
 
+## P-Hacking Varies by Journal Rank
 
-@fig-fig1 a illustrates the distribution of z-statistics across all samples. We used a histogram with a bin width of 0.1. Due to some t-values being excessively large, only data with t-values not exceeding 10 were retained for plotting. Critical values corresponding to significant levels of 10%, 5%, and 1% are marked with green, blue, and red vertical lines respectively. Finally, the density function curve corresponding to the histogram is plotted with a solid black line. The distribution exhibits a bimodal shape: the first peak corresponds to lower z-statistics, while the second peak lies between the green and red lines. There is a noticeable jump to the right of the blue line, indicating a potential presence of p-hacking. @fig-fig1 b and c depict the distribution of z-statistics divided by journal ranking into top 5 and non-top 5 journals. These three panels are integrated by @gridExtraR .Both distributions exhibit similar bimodal shapes, suggesting that the degree of p-hacking is unrelated to journal ranking in our sample of the top 25 journals.
+@fig-fig1 a illustrates the distribution of z-statistics across all samples. We used a histogram with a bin width of 0.1 by using @ggplot2R and @tidyverseR. Due to some t-values being excessively large, only data with t-values not exceeding 10 were retained for plotting. Critical values corresponding to significant levels of 10%, 5%, and 1% are marked with green, blue, and red vertical lines respectively. Finally, the density function curve corresponding to the histogram is plotted with a solid black line. The distribution exhibits a bimodal shape: the first peak corresponds to lower z-statistics, while the second peak lies between the green and red lines. There is a noticeable jump to the right of the blue line, indicating a potential presence of p-hacking. @fig-fig1 b and c depict the distribution of z-statistics divided by journal ranking into top 5 and non-top 5 journals. These three panels are integrated by @gridExtraR .Both distributions exhibit similar bimodal shapes, suggesting that the degree of p-hacking is unrelated to journal ranking in our sample of the top 25 journals.
 
 
 ```{r}
@@ -228,6 +234,7 @@ grid.arrange(p, arrangeGrob(p1, p2, ncol = 2), nrow = 2)
 
 ```
 
+## P-Hacking Varies by Method
 
 
 @fig-fig2 displays the distribution of z-statistics for each method. The histogram construction method is the same as in Figure 1. The distribution of DID exhibits two local maxima, with the second local maximum occurring at the critical value corresponding to the 5% significant level. IV shows only one global maximum occurring at the critical value corresponding to the 5% significant level. DID and IV seem to exhibit transitions from statistically insignificant regions to significant intervals. The mismatch in IV appears to be the highest, with a fairly large peak. In stark contrast, RDD presents an almost monotonic decreasing curve, with maximum density close to 0. The distribution of RCT is similar, but with much smaller local maxima close to the critical value at 5% significant level. This suggests that the degree of improper testing allocation in RCT and RDD articles is much greater than in articles using IV and DID methods.
@@ -307,7 +314,7 @@ grid.arrange(DID,IV,RCT,RDD, nrow = 2)
 
 ```
 
-
+## P-Hacking Varies by Year
 
 @fig-fig3 reflects the expected changes in p-hacking over time. @fig-fig2 (top left) compares tests from three top journals between 2005-2011 and 2015-2018 (top right), while the bottom panel provides a comparison of tests from the top 25 journals in 2015 and 2018. From the two upper panels, it can be observed that for top 3 articles, the distribution between 2005-2011 and 2015 & 2018 is similar, indicating no significant changes in p-hacking for top 3 articles over time. Similarly, comparing the distribution curves for the top 25 in 2015 and 2018, we did not find significant changes over time.
 
@@ -393,7 +400,7 @@ grid.arrange(Top3B2015,Top3_2015_2018,Y2015,Y2018, nrow = 2)
 
 # Discussion {#sec-discussion}
 
-##  harmness of P-hacking and overall discussion {#sec-first-point}
+##  Harmness of P-hacking and overall discussion {#sec-first-point}
 
 P-hacking, the selective analysis or manipulation of statistical tests to attain desired significance levels, poses a significant challenge in empirical research, especially in fields like economics where causal inference is pivotal. Its prevalence undermines scientific credibility, leading to false positives and distorting interpretations. Our study delves into p-hacking's prevalence and implications in economic research, particularly in quasi-experimental causal analysis.
 
@@ -408,7 +415,7 @@ We have studied how P-Hacking Varies by method, year and journal rank, and I wil
 
 ## P-Hacking Varies by Method {#sec-second-point}
 
-The distribution of z-statistics across various causal inference methods unveils nuanced insights into the potential susceptibility to p-hacking in empirical research. While Difference-in-Differences (DID) and Instrumental Variables (IV) methods exhibit transitions from statistically insignificant regions to significant intervals, indicating possible selective reporting for desired significance levels, IV methods notably present a higher mismatch, suggesting potential data manipulation or selective reporting. In contrast, Regression Discontinuity Design (RDD) displays a monotonic decreasing curve, implying a lower likelihood of p-hacking, while Randomized Controlled Trials (RCT) exhibit smaller peaks near critical values, suggesting less severe improper testing allocation compared to IV and DID methods. These findings underscore the importance of robust methodologies and transparent reporting to mitigate the risk of p-hacking and ensure the credibility and reliability of empirical research in economics.
+The distribution of z-statistics across various causal inference methods unveils nuanced insights into the potential susceptibility to p-hacking in empirical research. While Difference-in-Differences (DID) and Instrumental Variables (IV) methods exhibit transitions from statistically insignificant regions to significant intervals, indicating possible selective reporting for desired significance levels. IV methods notably present a higher mismatch, suggesting potential data manipulation or selective reporting. In contrast, Regression Discontinuity Design (RDD) displays a monotonic decreasing curve, implying a lower likelihood of p-hacking, while Randomized Controlled Trials (RCT) exhibit smaller peaks near critical values, suggesting less severe improper testing allocation compared to IV and DID methods. These findings underscore the importance of robust methodologies and transparent reporting to mitigate the risk of p-hacking and ensure the credibility and reliability of empirical research in economics.
 
 
 ## P-Hacking Varies by Year {#sec-third-point}

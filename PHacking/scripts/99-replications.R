@@ -1,6 +1,6 @@
 #### Preamble ####
 # Purpose: Replicated graphs from “Methods Matter: p-Hacking and Publication Bias in Causal Analysis in Economics”
-# Author: Chenhang Huang
+# Author: Chenhang Huang, Zixuan Yang
 # Date: 11 February 2023
 # Contact: chenhang.huang@mail.utoronto.ca
 # License: UOT

@@ -1,6 +1,6 @@
 #### Preamble ####
 # Purpose: clean the data and mutate some new variable of interest in the clean dataset
-# Author: Chenhang Huang
+# Author: Chenhang Huang,Zixuan Yang
 # Date: 04 Feb 2024
 # Contact: chenhang.huang@mail.utoronto.ca
 # License: UOT

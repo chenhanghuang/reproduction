@@ -1,6 +1,6 @@
 #### Preamble ####
 # Purpose: Downloads and saves the data from open.toronto.ca
-# Author: Chenhang Huang
+# Author: Chenhang Huang,Zixuan Yang
 # Date: 2 Feb 2024
 # Contact: chenhang.huang@mail.utoronto.ca
 # License: UOT

@@ -1,6 +1,6 @@
 #### Preamble ####
 # Purpose: test the variable to see if the variable in the right format and range  
-# Author: Chenhang Huang
+# Author: Chenhang Huang,Zixuan Yang
 # Date: 04 Feb 2024
 # Contact: chenhang.huang@mail.utoronto.ca
 # License: Uoft
